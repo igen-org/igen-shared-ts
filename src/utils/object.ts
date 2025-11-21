@@ -1,7 +1,7 @@
 /**
  * Produces a new object overriding the provided properties on top of the original shape.
  */
-export const clone = <T>(object: T, props: Partial<T>): T => ({ ...object, ...props }) as T;
+export const clone = <T, P>(object: T, props: Partial<P>): T & P => ({ ...object, ...props }) as T & P;
 
 /**
  * Checks if two objects have the same keys with strictly equal values.

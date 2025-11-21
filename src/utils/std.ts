@@ -26,9 +26,9 @@ export const identity = <T>(value: T): T => value;
 export const noop = (): void => {};
 
 /**
- * Negates the boolean result of the provided predicate.
+ * Negates the boolean result of the provided predicate while preserving argument types.
  */
-export const not = (fn: AnyFunction<boolean>): AnyFunction<boolean> => {
+export const not = <Args extends unknown[]>(fn: AnyFunction<Args, boolean>): AnyFunction<Args, boolean> => {
     return (...args) => !fn(...args);
 };
 
