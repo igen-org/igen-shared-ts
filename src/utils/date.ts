@@ -8,6 +8,11 @@ export type DateHelperOptions = {
      * When true the operations use UTC setters/getters rather than local time.
      */
     utc?: boolean;
+    /**
+     * Sets which weekday is considered the start of the week (0 = Sunday, 1 = Monday, ... 6 = Saturday).
+     * Applies to week-based calculations in startOf/endOf/isSame.
+     */
+    weekStartsOn?: number;
 };
 
 const MILLISECOND_IN_SECOND = 1000;
@@ -203,7 +208,9 @@ export const startOf = (date: Date, unit: DateUnit, options?: DateHelperOptions)
         case 'week': {
             const startOfDay = startOf(date, 'day', options);
             const day = useUtc ? startOfDay.getUTCDay() : startOfDay.getDay();
-            return shiftDate(startOfDay, -day, 'day', options);
+            const weekStart = options?.weekStartsOn ?? 0;
+            const offset = (day - weekStart + 7) % 7;
+            return shiftDate(startOfDay, -offset, 'day', options);
         }
         case 'month':
             if (useUtc) {

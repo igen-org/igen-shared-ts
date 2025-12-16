@@ -1,14 +1,14 @@
-import type { AnyFunction, Complete, Optional, Result } from '../types.js';
+import type { AnyFunction, Optional, Provider, Result } from '../types.js';
 
 /**
  * Type guard that checks whether a value is neither null nor undefined.
  */
-export const isDefined = <T>(value: Optional<T>): value is Complete<T> => value !== undefined && value !== null;
+export const isDefined = <T>(value: Optional<T>): value is T => value !== undefined && value !== null;
 
 /**
  * Ensures a value is defined, otherwise throws with an optional custom message.
  */
-export const assertDefined = <T>(value: Optional<T>, message?: string): Complete<T> => {
+export const assertDefined = <T>(value: Optional<T>, message?: string): T => {
     if (!isDefined(value)) {
         throw new Error(message ?? 'Value is undefined or null');
     }
@@ -113,3 +113,14 @@ export const ok = <T>(value: T): Result<T, never> => ({ ok: true, value });
  * Wraps an error in a discriminated Result union.
  */
 export const err = <E>(error: E): Result<never, E> => ({ ok: false, error });
+
+/**
+ * Executes a function and captures thrown errors into a Result.
+ */
+export const fromTry = <T>(fn: Provider<T>): Result<T, unknown> => {
+    try {
+        return ok(fn());
+    } catch (error) {
+        return err(error);
+    }
+};

@@ -1,4 +1,4 @@
-import type { Optional } from '../types.js';
+import type { Optional, Predicate, Transformer } from '../types.js';
 import { isDefined } from './std.js';
 
 /**
@@ -20,6 +20,11 @@ export const without = <T>(array: T[], value: T): T[] => array.filter((item) => 
  * Creates a new array filtering out every value present in the provided list.
  */
 export const withoutAll = <T>(array: T[], values: T[]): T[] => array.filter((item) => !values.includes(item));
+
+/**
+ * Returns a new array excluding null and undefined values.
+ */
+export const compact = <T>(array: Array<Optional<T>>): T[] => array.filter(isDefined);
 
 /**
  * Returns the elements shared between both arrays.
@@ -51,7 +56,7 @@ export const chunk = <T>(array: T[], size: number): T[][] => {
 /**
  * Groups items by a derived key produced by `keyFn`.
  */
-export const groupBy = <T, K extends PropertyKey>(array: T[], keyFn: (value: T) => K): Record<K, T[]> => {
+export const groupBy = <T, K extends PropertyKey>(array: T[], keyFn: Transformer<T, K>): Record<K, T[]> => {
     return array.reduce<Record<K, T[]>>(
         (acc, item) => {
             const key = keyFn(item);
@@ -69,7 +74,7 @@ export const groupBy = <T, K extends PropertyKey>(array: T[], keyFn: (value: T) 
  * Splits an array in two lists according to predicate truthiness.
  * @returns A tuple with items passing the predicate and the remaining items.
  */
-export const partition = <T>(array: T[], predicate: (value: T) => boolean): [T[], T[]] => {
+export const partition = <T>(array: T[], predicate: Predicate<T>): [T[], T[]] => {
     const truthy: T[] = [];
     const falsy: T[] = [];
 
@@ -95,3 +100,33 @@ export const zip = <A, B>(a: A[], b: B[]): Array<[A, B]> => {
     }
     return result;
 };
+
+/**
+ * Builds an array of numbers from start (inclusive) to end (exclusive).
+ * @throws Error when step is zero.
+ */
+export const range = (start: number, end: number, step = 1): number[] => {
+    if (step === 0) {
+        throw new Error('range step must not be zero');
+    }
+
+    const result: number[] = [];
+    const ascending = end >= start;
+    const normalizedStep = ascending ? Math.abs(step) : -Math.abs(step);
+
+    for (let value = start; ascending ? value < end : value > end; value += normalizedStep) {
+        result.push(value);
+    }
+
+    return result;
+};
+
+/**
+ * Flattens a single level of nesting.
+ */
+export const flatten = <T>(array: T[][]): T[] => array.reduce<T[]>((acc, current) => acc.concat(current), []);
+
+/**
+ * Counts the number of items matching the predicate.
+ */
+export const count = <T>(array: T[], predicate: Predicate<T>): number => array.filter(predicate).length;

@@ -46,6 +46,56 @@ export const kebabCase = (str: string): string => slugify(str, '-');
  */
 export const camelCase = (str: string): string => camelize(str);
 
+/**
+ * Truncates text and appends a suffix when over length.
+ */
+export const truncate = (str: string, maxLength: number, suffix = '...'): string => {
+    if (maxLength < 0) {
+        throw new Error('maxLength must be non-negative');
+    }
+
+    if (str.length <= maxLength) {
+        return str;
+    }
+
+    const available = Math.max(0, maxLength - suffix.length);
+    return str.slice(0, available) + suffix;
+};
+
+/**
+ * Removes the prefix when present.
+ */
+export const stripPrefix = (str: string, prefix: string): string => (str.startsWith(prefix) ? str.slice(prefix.length) : str);
+
+/**
+ * Removes the suffix when present.
+ */
+export const stripSuffix = (str: string, suffix: string): string => (str.endsWith(suffix) ? str.slice(0, -suffix.length) : str);
+
+/**
+ * Counts overlapping occurrences of `search` within `str`.
+ * @throws Error when `search` is empty to avoid infinite matches.
+ */
+export const countOccurrences = (str: string, search: string): number => {
+    if (search.length === 0) {
+        throw new Error('search value must not be empty');
+    }
+
+    let count = 0;
+    let startIndex = 0;
+
+    while (true) {
+        const index = str.indexOf(search, startIndex);
+        if (index === -1) {
+            break;
+        }
+        count += 1;
+        startIndex = index + search.length;
+    }
+
+    return count;
+};
+
 type TextEncoderCtor = new () => { encode: (value: string) => Uint8Array };
 type TextDecoderCtor = new () => { decode: (value: Uint8Array) => string };
 type BufferFactory = {

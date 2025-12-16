@@ -1,6 +1,20 @@
 import { describe, expect, it } from 'vitest';
 
-import { base64Decode, base64Encode, camelCase, capitalize, isBlank, isNotBlank, kebabCase, snakeCase, trim } from '../src/utils/string.js';
+import {
+    base64Decode,
+    base64Encode,
+    camelCase,
+    capitalize,
+    countOccurrences,
+    isBlank,
+    isNotBlank,
+    kebabCase,
+    stripPrefix,
+    stripSuffix,
+    snakeCase,
+    trim,
+    truncate,
+} from '../src/utils/string.js';
 
 describe('string utilities', () => {
     it('capitalize only affects the first character', () => {
@@ -16,6 +30,25 @@ describe('string utilities', () => {
     it('base64 helpers round trip UTF-8 strings', () => {
         const encoded = base64Encode('Olá mundo');
         expect(base64Decode(encoded)).toBe('Olá mundo');
+    });
+
+    it('truncate shortens text and appends suffix', () => {
+        expect(truncate('hello world', 5)).toBe('he...');
+        expect(truncate('short', 10)).toBe('short');
+        expect(() => truncate('text', -1)).toThrow(/maxLength/);
+    });
+
+    it('stripPrefix and stripSuffix remove matches only when present', () => {
+        expect(stripPrefix('foobar', 'foo')).toBe('bar');
+        expect(stripPrefix('bar', 'foo')).toBe('bar');
+        expect(stripSuffix('README.md', '.md')).toBe('README');
+        expect(stripSuffix('README', '.md')).toBe('README');
+    });
+
+    it('countOccurrences counts non-overlapping matches', () => {
+        expect(countOccurrences('banana', 'an')).toBe(2);
+        expect(countOccurrences('aaaa', 'aa')).toBe(2);
+        expect(() => countOccurrences('text', '')).toThrow(/empty/);
     });
 
     it('trim safely handles undefined and whitespace-only strings', () => {

@@ -49,6 +49,13 @@ describe('date utilities', () => {
         expect(startWeek.getTime()).toBe(expectedWeek.getTime());
     });
 
+    it('startOf supports custom weekStartsOn', () => {
+        const date = new Date('2023-06-18T10:00:00.000Z'); // Sunday
+        const mondayWeekStart = startOf(date, 'week', { weekStartsOn: 1, utc: true });
+        expect(mondayWeekStart.getUTCDay()).toBe(1);
+        expect(mondayWeekStart.toISOString()).toBe('2023-06-12T00:00:00.000Z');
+    });
+
     it('startOf honors the utc option', () => {
         const date = new Date('2023-06-15T23:59:59.999Z');
         const expectedLocal = new Date(date);
@@ -89,5 +96,12 @@ describe('date utilities', () => {
         const a = new Date('2023-01-01T00:00:00.000Z');
         const b = new Date('2023-01-01T23:59:59.999Z');
         expect(isSame(a, b, 'day', { utc: true })).toBe(true);
+    });
+
+    it('isSame respects custom weekStartsOn', () => {
+        const sunday = new Date('2023-06-18T10:00:00.000Z');
+        const monday = new Date('2023-06-19T10:00:00.000Z');
+        expect(isSame(sunday, monday, 'week', { weekStartsOn: 1 })).toBe(false);
+        expect(isSame(sunday, monday, 'week')).toBe(true);
     });
 });

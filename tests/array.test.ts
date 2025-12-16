@@ -1,6 +1,21 @@
 import { describe, expect, it } from 'vitest';
 
-import { chunk, difference, groupBy, intersection, isEmpty, partition, unique, without, withoutAll, zip } from '../src/utils/array.js';
+import {
+    chunk,
+    compact,
+    count,
+    difference,
+    flatten,
+    groupBy,
+    intersection,
+    isEmpty,
+    partition,
+    range,
+    unique,
+    without,
+    withoutAll,
+    zip,
+} from '../src/utils/array.js';
 
 describe('array utilities', () => {
     it('unique keeps only first occurrence of each element', () => {
@@ -29,6 +44,10 @@ describe('array utilities', () => {
         expect(difference(['a', 'b', 'c'], ['b'])).toEqual(['a', 'c']);
     });
 
+    it('compact removes nullish values', () => {
+        expect(compact([1, null, 2, undefined, 3])).toEqual([1, 2, 3]);
+    });
+
     it('chunk splits arrays into equally sized groups', () => {
         expect(chunk([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
     });
@@ -49,6 +68,21 @@ describe('array utilities', () => {
         const [even, odd] = partition([1, 2, 3, 4], (value) => value % 2 === 0);
         expect(even).toEqual([2, 4]);
         expect(odd).toEqual([1, 3]);
+    });
+
+    it('count returns how many items satisfy the predicate', () => {
+        expect(count([1, 2, 3, 4, 5], (value) => value > 3)).toBe(2);
+        expect(count(['a', 'b', 'c'], (value) => value === 'z')).toBe(0);
+    });
+
+    it('range builds sequences respecting direction and step', () => {
+        expect(range(0, 5)).toEqual([0, 1, 2, 3, 4]);
+        expect(range(5, 0, 2)).toEqual([5, 3, 1]);
+        expect(() => range(0, 3, 0)).toThrow(/step/);
+    });
+
+    it('flatten collapses a single nested level', () => {
+        expect(flatten([[1, 2], [], [3]])).toEqual([1, 2, 3]);
     });
 
     it('zip pairs elements using the shortest array length', () => {

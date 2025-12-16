@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
     assertDefined,
     err,
+    fromTry,
     identity,
     isArray,
     isBoolean,
@@ -86,5 +87,16 @@ describe('std utilities', () => {
     it('ok and err wrap values in Result discriminated unions', () => {
         expect(ok(123)).toEqual({ ok: true, value: 123 });
         expect(err(new Error('boom'))).toEqual({ ok: false, error: new Error('boom') });
+    });
+
+    it('fromTry captures thrown errors into Result', () => {
+        expect(fromTry(() => 5)).toEqual({ ok: true, value: 5 });
+        const result = fromTry(() => {
+            throw new Error('fail');
+        });
+        expect(result.ok).toBe(false);
+        if (!result.ok) {
+            expect((result.error as Error).message).toBe('fail');
+        }
     });
 });
