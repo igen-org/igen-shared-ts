@@ -8,7 +8,7 @@ export type AnyFunction<Args extends unknown[] = unknown[], Return = unknown> = 
 export type Optional<T> = T | missing;
 export type Something<T> = Exclude<T, missing>;
 export type Complete<T> = { [P in keyof T]: Something<T[P]> };
-export type Json<T> = { [P in keyof T]: Json<T[P]> | null };
+export type Json<T> = { [P in keyof T]: T[P] extends Array<infer U> ? Array<U> | null : Json<T[P]> | null };
 export type Provider<T> = () => T;
 export type Consumer<T> = (value: T) => void;
 export type Transformer<T, U> = (value: T) => U;
