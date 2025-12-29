@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { dateDiff, endOf, formatDate, isSame, modifyDate, now, startOf } from '../src/utils/date.js';
+import { dateDiff, endOf, formatDate, isSame, modifyDate, now, parseDate, startOf } from '../src/utils/date.js';
 
 describe('date utilities', () => {
     afterEach(() => {
@@ -17,6 +17,32 @@ describe('date utilities', () => {
         const fake = new Date('2025-05-01T10:11:12.000Z');
         vi.setSystemTime(fake);
         expect(now().getTime()).toBe(fake.getTime());
+    });
+
+    it('parseDate clones dates and timestamps', () => {
+        const base = new Date('2024-02-03T04:05:06.000Z');
+        const parsedDate = parseDate(base);
+        expect(parsedDate).not.toBe(base);
+        expect(parsedDate.getTime()).toBe(base.getTime());
+
+        const timestamp = base.getTime();
+        expect(parseDate(timestamp).getTime()).toBe(timestamp);
+    });
+
+    it('parseDate respects timezone-less ISO strings based on utc option', () => {
+        const localParsed = parseDate('2024-02-03T04:05:06');
+        expect(localParsed.getTime()).toBe(new Date('2024-02-03T04:05:06').getTime());
+
+        const utcParsed = parseDate('2024-02-03T04:05:06', { utc: true });
+        expect(utcParsed.toISOString()).toBe('2024-02-03T04:05:06.000Z');
+    });
+
+    it('parseDate leaves timezone-aware strings untouched', () => {
+        const withOffset = parseDate('2024-02-03T04:05:06+02:00', { utc: true });
+        expect(withOffset.toISOString()).toBe(new Date('2024-02-03T04:05:06+02:00').toISOString());
+
+        const withZulu = parseDate('2024-02-03T04:05:06Z');
+        expect(withZulu.toISOString()).toBe('2024-02-03T04:05:06.000Z');
     });
 
     it('modifyDate shifts the date by the provided value and unit', () => {

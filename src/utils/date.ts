@@ -28,6 +28,21 @@ const assertUnsupportedUnit = (_unit: never): never => {
     throw new Error('Unsupported DateUnit');
 };
 
+const ISO_TIMEZONE_PATTERN = /(?:Z|[+-]\d{2}:?\d{2})$/i;
+const ISO_HAS_TIME = /T/;
+
+const parseDateString = (value: string, asUtc: boolean): Date => {
+    const trimmed = value.trim();
+    const hasTime = ISO_HAS_TIME.test(trimmed);
+    const hasTimezone = ISO_TIMEZONE_PATTERN.test(trimmed);
+
+    if (asUtc && hasTime && !hasTimezone) {
+        return new Date(`${trimmed}Z`);
+    }
+
+    return new Date(trimmed);
+};
+
 const shiftDate = (date: Date, value: number, unit: DateUnit, options?: DateHelperOptions): Date => {
     const updated = cloneDate(date);
     const useUtc = options?.utc === true;
@@ -131,6 +146,21 @@ export const formatDate = (date: Date, locales?: Intl.LocalesArgument, options?:
  * Returns a new Date representing the current instant.
  */
 export const now = (): Date => new Date();
+
+/**
+ * Parses a date value, treating timezone-less ISO strings as UTC when requested.
+ */
+export const parseDate = (value: string | number | Date, options?: DateHelperOptions): Date => {
+    if (value instanceof Date) {
+        return cloneDate(value);
+    }
+
+    if (typeof value === 'number') {
+        return new Date(value);
+    }
+
+    return parseDateString(value, options?.utc === true);
+};
 
 /**
  * Creates a new date shifted by the provided value and unit.
