@@ -1,0 +1,4 @@
+interface:
+    display_name: '@igen/shared Consumer'
+    short_description: 'Use @igen/shared without rereading source'
+    default_prompt: 'Use $igen-shared-consumer to integrate @igen/shared utilities into this TypeScript project.'
