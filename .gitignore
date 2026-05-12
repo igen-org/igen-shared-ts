@@ -92,8 +92,11 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 .output
+
+# Keep package artifacts versioned so git/file installs do not need a build.
+!dist/
+!dist/**
 
 # Gatsby files
 .cache/

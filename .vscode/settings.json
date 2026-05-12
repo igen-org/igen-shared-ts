@@ -1,5 +1,18 @@
 {
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#4C1C3C",
+        "titleBar.activeBackground": "#6B2753",
+        "titleBar.activeForeground": "#FDF8FB",
+        "titleBar.inactiveBackground": "#4C1C3C",
+        "titleBar.inactiveForeground": "#FDF8FB",
+        "statusBar.background": "#4C1C3C",
+        "statusBar.foreground": "#FDF8FB",
+        "statusBar.debuggingBackground": "#4C1C3C",
+        "statusBar.debuggingForeground": "#FDF8FB",
+        "statusBar.noFolderBackground": "#4C1C3C",
+        "statusBar.noFolderForeground": "#FDF8FB"
     }
 }
